@@ -2,6 +2,8 @@
 
 namespace Dgame\Extraction;
 
+use function Dgame\Ensurance\enforce;
+
 /**
  * Class Extractor
  * @package Dgame\Extraction
@@ -16,6 +18,10 @@ final class Extractor
      * @var array
      */
     private $defaults = [];
+    /**
+     * @var array
+     */
+    private $required = [];
 
     /**
      * Extractor constructor.
@@ -50,6 +56,63 @@ final class Extractor
     }
 
     /**
+     * @return Extractor
+     */
+    public function requireAll(): self
+    {
+        return $this->require(...$this->fields);
+    }
+
+    /**
+     * @param string ...$fields
+     *
+     * @return Extractor
+     */
+    public function require(string ...$fields): self
+    {
+        $messages = [];
+        foreach ($fields as $field) {
+            $messages[$field] = null;
+        }
+
+        return $this->orFailWith($messages);
+    }
+
+    /**
+     * @param array $messages
+     *
+     * @return Extractor
+     */
+    public function orFailWith(array $messages): self
+    {
+        foreach ($messages as $field => $message) {
+            $this->required[$field] = $message;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return bool
+     */
+    private function isRequired(string $field): bool
+    {
+        return array_key_exists($field, $this->required);
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return string
+     */
+    private function getExceptionMessage(string $field): string
+    {
+        return $this->required[$field] ?? 'Field "%s" is required';
+    }
+
+    /**
      * @param array $source
      *
      * @return array
@@ -58,7 +121,14 @@ final class Extractor
     {
         $output = [];
         foreach ($this->fields as $field) {
-            $output[$field] = array_key_exists($field, $source) ? $source[$field] : $this->getDefaultOf($field);
+            if (!array_key_exists($field, $source)) {
+                enforce(!$this->isRequired($field))->orThrow($this->getExceptionMessage($field), $field);
+                $value = $this->getDefaultOf($field);
+            } else {
+                $value = $source[$field];
+            }
+
+            $output[$field] = $value;
         }
 
         return $output;

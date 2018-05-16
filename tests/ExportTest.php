@@ -1,5 +1,6 @@
 <?php
 
+use Dgame\Ensurance\Exception\EnsuranceException;
 use PHPUnit\Framework\TestCase;
 use function Dgame\Extraction\export;
 
@@ -38,8 +39,80 @@ final class ExportTest extends TestCase
 
     public function testExtractExport(): void
     {
-        ['name' => $name, 'password' => $pw] = export('name', 'password')->from(['name' => 'Max', 'password' => 'test', 'foo' => 42]);
+        [
+            'name'     => $name,
+            'password' => $pw
+        ] = export('name', 'password')->from(
+            [
+                'name'     => 'Max',
+                'password' => 'test',
+                'foo'      => 42
+            ]
+        );
+
         $this->assertEquals('Max', $name);
         $this->assertEquals('test', $pw);
+    }
+
+    public function testRequire()
+    {
+        $this->expectException(EnsuranceException::class);
+        $this->expectExceptionMessage('Field "password" is required');
+
+        [
+            'name'     => $name,
+            'password' => $pw
+        ] = export('name', 'password')
+            ->require('password')
+            ->from(['name' => 'Max']);
+
+        $this->assertEquals('Max', $name);
+        $this->assertNull($pw);
+    }
+
+    public function testOrFailWith()
+    {
+        $this->expectException(EnsuranceException::class);
+        $this->expectExceptionMessage('Wir benötigen ein Passwort');
+
+        [
+            'name'     => $name,
+            'password' => $pw
+        ] = export('name', 'password')->orFailWith(
+            [
+                'password' => 'Wir benötigen ein Passwort'
+            ]
+        )->from(['name' => 'Max']);
+
+        $this->assertEquals('Max', $name);
+        $this->assertNull($pw);
+    }
+
+    public function testRequireAllWithOneMissingField()
+    {
+        $this->expectException(EnsuranceException::class);
+        $this->expectExceptionMessage('Field "password" is required');
+
+        [
+            'name'     => $name,
+            'password' => $pw
+        ] = export('name', 'password')->requireAll()->from(['name' => 'Max']);
+
+        $this->assertEquals('Max', $name);
+        $this->assertNull($pw);
+    }
+
+    public function testRequireAllWithMissingFields()
+    {
+        $this->expectException(EnsuranceException::class);
+        $this->expectExceptionMessage('Field "name" is required'); // First comes first serves
+
+        [
+            'name'     => $name,
+            'password' => $pw
+        ] = export('name', 'password')->requireAll()->from([]);
+
+        $this->assertNull($name);
+        $this->assertNull($pw);
     }
 }
