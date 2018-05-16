@@ -54,7 +54,7 @@ final class ExportTest extends TestCase
         $this->assertEquals('test', $pw);
     }
 
-    public function testRequire()
+    public function testRequire(): void
     {
         $this->expectException(EnsuranceException::class);
         $this->expectExceptionMessage('Field "password" is required');
@@ -70,7 +70,7 @@ final class ExportTest extends TestCase
         $this->assertNull($pw);
     }
 
-    public function testOrFailWith()
+    public function testOrFailWith(): void
     {
         $this->expectException(EnsuranceException::class);
         $this->expectExceptionMessage('Wir benötigen ein Passwort');
@@ -88,7 +88,7 @@ final class ExportTest extends TestCase
         $this->assertNull($pw);
     }
 
-    public function testRequireAllWithOneMissingField()
+    public function testRequireAllWithOneMissingField(): void
     {
         $this->expectException(EnsuranceException::class);
         $this->expectExceptionMessage('Field "password" is required');
@@ -102,7 +102,7 @@ final class ExportTest extends TestCase
         $this->assertNull($pw);
     }
 
-    public function testRequireAllWithMissingFields()
+    public function testRequireAllWithMissingFields(): void
     {
         $this->expectException(EnsuranceException::class);
         $this->expectExceptionMessage('Field "name" is required'); // First comes first serves
