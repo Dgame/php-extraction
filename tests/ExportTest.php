@@ -1,8 +1,8 @@
 <?php
 
 use Dgame\Ensurance\Exception\EnsuranceException;
-use PHPUnit\Framework\TestCase;
 use function Dgame\Extraction\export;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ExportTest
