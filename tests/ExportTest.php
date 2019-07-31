@@ -115,4 +115,35 @@ final class ExportTest extends TestCase
         $this->assertNull($name);
         $this->assertNull($pw);
     }
+
+    public function testExportValues(): void
+    {
+        [$foo, $bar, $quatz] = export('foo', 'bar', 'quatz')
+            ->onlyValues()
+            ->from([
+                       'foo'   => 'Ein Test',
+                       'quatz' => 'Noch einer'
+                   ]);
+
+        $this->assertEquals('Ein Test', $foo);
+        $this->assertNull($bar);
+        $this->assertEquals('Noch einer', $quatz);
+    }
+
+    public function testExportValuesRequireAll(): void
+    {
+        $this->expectExceptionMessage('Field "bar" is required');
+
+        [$foo, $bar, $quatz] = export('foo', 'bar', 'quatz')
+            ->requireAll()
+            ->onlyValues()
+            ->from([
+                       'foo'   => 'Ein Test',
+                       'quatz' => 'Noch einer'
+                   ]);
+
+        $this->assertEquals('Ein Test', $foo);
+        $this->assertNull($bar);
+        $this->assertEquals('Noch einer', $quatz);
+    }
 }

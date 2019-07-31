@@ -13,7 +13,7 @@ final class Extractor
     /**
      * @var array
      */
-    private $fields = [];
+    private $fields;
     /**
      * @var array
      */
@@ -22,6 +22,10 @@ final class Extractor
      * @var array
      */
     private $required = [];
+    /**
+     * @var bool
+     */
+    private $onlyValues = false;
 
     /**
      * Extractor constructor.
@@ -52,7 +56,7 @@ final class Extractor
      */
     private function getDefaultOf(string $field)
     {
-        return array_key_exists($field, $this->defaults) ? $this->defaults[$field] : null;
+        return $this->defaults[$field] ?? null;
     }
 
     /**
@@ -113,6 +117,16 @@ final class Extractor
     }
 
     /**
+     * @return Extractor
+     */
+    public function onlyValues(): self
+    {
+        $this->onlyValues = true;
+
+        return $this;
+    }
+
+    /**
      * @param array $source
      *
      * @return array
@@ -131,6 +145,6 @@ final class Extractor
             $output[$field] = $value;
         }
 
-        return $output;
+        return $this->onlyValues ? array_values($output) : $output;
     }
 }
