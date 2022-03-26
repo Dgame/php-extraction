@@ -3,38 +3,43 @@
     "description": "php extraction",
     "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/php-extraction",
     "authors": [
         {
             "name": "Randy Schütt",
             "email": "rswhite4@gmail.com"
         }
     ],
+    "homepage": "https://github.com/php-extraction",
     "require": {
-        "php": "^7.1",
-        "dgame/php-ensurance": "^1.0 || ^2.0"
+        "php": "^7.4 || ^8.0",
+        "dgame/php-ensurance": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5",
-        "phpstan/phpstan": "^0.11.12"
+        "phpstan/phpstan": "^1",
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
+        "psr-4": {
+            "Dgame\\Extraction\\": "src/"
+        },
         "classmap": [
             "src/"
         ],
         "files": [
             "src/functions.php"
-        ],
-        "psr-4": {
-            "Dgame\\Extraction\\": "src/"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
         }
     },
     "scripts": {
-        "test": [
-            "phpunit"
-        ],
         "coverage": [
             "phpunit --coverage-clover=coverage"
+        ],
+        "test": [
+            "phpunit"
         ]
     }
 }
